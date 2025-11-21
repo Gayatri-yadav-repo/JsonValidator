@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON Craft</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/theme/eclipse.min.css">
+</head>
+<body>
+<div class="header">
+    <h1>JSON Craft</h1>
+    <button id="darkModeToggle">🌙 Dark Mode</button>
+</div>
+
+<div class="nav">
+    <button data-panel="formatter" class="active">Formatter</button>
+    <button data-panel="diff">Diff Tool</button>
+    <button data-panel="merge">Merge</button>
+    <button data-panel="schema">Schema Generator</button>
+    <button data-panel="encrypt">Encryption</button>
+    <button data-panel="convert">Converters</button>
+    <button data-panel="api">API Tester</button>
+    <button data-panel="contact">Contact Us</button>
+    <button data-panel="about">About Us</button>
+</div>
+
+<div class="panel-container">
+    <!-- Formatter -->
+    <div id="formatter" class="panel active">
+        <textarea id="jsonInput" placeholder="Paste JSON here" class="standard-textarea"></textarea>
+        <div class="toolbar">
+            <button onclick="beautifyJSON()">Beautify</button>
+            <button onclick="minifyJSON()">Minify</button>
+            <button onclick="validateJSON()">Validate</button>
+            <button onclick="clearJSON()">Clear</button>
+            <button onclick="copyJSON()">Copy</button>
+            <button onclick="downloadJSON()">Download</button>
+            <button onclick="uploadFile()">Upload</button>
+        </div>
+        <div id="errorMessage"></div>
+    </div>
+
+    <!-- Diff Tool -->
+    <div id="diff" class="panel">
+        <textarea id="leftJSON" placeholder="Left JSON" class="standard-textarea"></textarea>
+        <textarea id="rightJSON" placeholder="Right JSON" class="standard-textarea"></textarea>
+        <button onclick="diffJSON()">Compare</button>
+        <pre id="diffOutput" class="diff-output"></pre>
+        <div id="diffStatus"></div>
+    </div>
+
+    <!-- Merge JSON -->
+    <div id="merge" class="panel">
+        <textarea id="mergeLeft" placeholder="Left JSON" class="standard-textarea"></textarea>
+        <textarea id="mergeRight" placeholder="Right JSON" class="standard-textarea"></textarea>
+        <button onclick="mergeJSON()">Merge</button>
+        <pre id="mergeOutput"></pre>
+        <div id="mergeStatus"></div>
+    </div>
+
+    <!-- Schema Generator -->
+    <div id="schema" class="panel">
+        <textarea id="schemaInput" placeholder="Enter JSON to generate schema" class="standard-textarea"></textarea>
+        <button onclick="generateSchema()">Generate Schema</button>
+        <pre id="schemaOutput"></pre>
+        <div id="schemaStatus"></div>
+    </div>
+
+    <!-- Encryption -->
+    <div id="encrypt" class="panel">
+        <textarea id="encryptInput" placeholder="Enter text to encrypt" class="standard-textarea"></textarea>
+        <textarea id="encryptOutput" placeholder="Encrypted output" class="standard-textarea"></textarea>
+        <button onclick="encryptJSON()">Encrypt</button>
+        <button onclick="decryptJSON()">Decrypt</button>
+        <div id="encryptStatus"></div>
+    </div>
+
+    <!-- Converters -->
+    <div id="convert" class="panel">
+        <textarea id="convertInput" placeholder="Paste JSON here" class="standard-textarea"></textarea>
+        <select id="convertFormat" class="standard-textarea">
+            <option value="">Choose Format</option>
+            <option value="yaml">YAML</option>
+            <option value="csv">CSV</option>
+            <option value="xml">XML</option>
+            <option value="json">JSON</option>
+        </select>
+        <button onclick="convertJSON()">Convert</button>
+        <pre id="convertOutput"></pre>
+        <div id="convertStatus"></div>
+    </div>
+
+    <!-- API Tester -->
+    <div id="api" class="panel">
+        <div class="api-row">
+            <input id="apiUrl" type="text" placeholder="API URL" class="api-url">
+            <div class="api-methods">
+                <button onclick="setMethod('GET', this)">GET</button>
+                <button onclick="setMethod('POST', this)">POST</button>
+                <button onclick="setMethod('PUT', this)">PUT</button>
+                <button onclick="setMethod('PATCH', this)">PATCH</button>
+                <button onclick="setMethod('DELETE', this)">DELETE</button>
+            </div>
+        </div>
+        <input id="apiHeaders" placeholder="Headers JSON (optional)" class="api-headers">
+        <textarea id="apiBody" placeholder="Body JSON (for POST/PUT/PATCH)" class="standard-textarea"></textarea>
+        <button onclick="callAPI()">Send Request</button>
+        <pre id="apiResponse"></pre>
+        <div id="apiStatus"></div>
+    </div>
+
+    <!-- Contact Us -->
+    <div id="contact" class="panel">
+        <h2>Contact Us</h2>
+        <form name="contact" method="POST" data-netlify="true" class="contact-form">
+            <input id="contactName" type="text" name="name" placeholder="Your Name" required>
+            <input id="contactEmail" type="email" name="email" placeholder="Your Email" required>
+            <textarea id="contactMessage" name="message" placeholder="Message" required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+        <div id="contactStatus">Messages stored via Netlify Forms.</div>
+    </div>
+
+    <!-- About Us -->
+    <div id="about" class="panel">
+        <h2>About JSON Craft</h2>
+        <p>This tool allows formatting, validation, diff, merge, encryption, conversion, and API testing of JSON. Fully web-based, professional UI.</p>
+        <p>Created with using HTML, CSS, JS, and popular libraries.</p>
+    </div>
+</div>
+
+<footer>
+    <p>© 2025 JSON Craft. All rights reserved.</p>
+</footer>
+
+<input type="file" id="fileInput" style="display:none;" onchange="handleFileUpload(event)">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/diff/5.1.0/diff.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/papaparse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xml-js/1.6.11/xml-js.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
